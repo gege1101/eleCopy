@@ -1,18 +1,18 @@
 <template>
-   <div>
+   <div class="app-wrapper">
     <v-header :seller="seller"></v-header>
     <div class="tab border-1px">
       <div class="tab-item">
-        <a v-link="{path:'/goods'}">商品</a>
+      	<router-link :to="{path:'/goods'}">商品</router-link>
       </div>
       <div class="tab-item">
-        <a v-link="{path:'/ratings'}">评论</a>
+      	<router-link :to="{path:'/ratings'}">评论</router-link>
       </div>
       <div class="tab-item">
-        <a v-link="{path:'/seller'}">商家</a>
+      	<router-link :to="{path:'/seller'}">商家</router-link>
       </div>
     </div>
-    <router-view :seller="seller" keep-alive></router-view>
+    <router-view ></router-view>
   </div>
 </template>
 
@@ -22,14 +22,16 @@
 export default {
   data(){
   	return {
-  		seller:[],
+  		seller:{},
   	}
   },
   created(){
+  	   
   	   this.$http.get('/api/seller').then((response) => {
         response = response.body;
+        console.log(response.data)
         if (response.errno === ERR_OK) {
-          this.seller = Object.assign({}, this.seller, response.data);
+          this.seller = response.data;
         }
       });
   },
@@ -44,7 +46,9 @@ export default {
 
 <style lang="stylus" rel="stylesheet/stylus">
   @import "./common/stylus/mixin.styl"
-
+.app-wrapper
+  padding-top:128px
+  box-sizing:border-box
   .tab
     display: flex
     width: 100%
