@@ -1,5 +1,5 @@
 <template>
-	<div class="goods-wrapper">
+	<div class="goods-wrapper" >
 		<div class="goods-left"  ref="menuWrapper">
 			<ul class="menu-list">
 				<li class="menu-item  menu-item-hook"  :class="{active:currentIndex == index}" v-for="(item,index) in goods" @click="selectItem(index,$event)">
@@ -24,18 +24,23 @@
 								<div class="sale-number">月售{{item.sellCount}}份 好评率{{item.rating}}%</div>
 								<div class="price"> <span class="text">￥{{item.price}}</span> <span class="old-price" v-if="item.oldPrice">￥{{item.oldPrice}}</span></div>
 							</div>
+							<div class="cart-contral-wrapper">
+								<vcart-contral :food="item" @increment="incrementTotal"></vcart-contral>
+							</div>
 						</li>
 					</ul>
 				</li>
 			</ul>
 		</div>
-		<v-shopcart :seller="seller"></v-shopcart>
+		<v-shopcart :seller="seller" ref="shopCart"></v-shopcart>
 	</div>
 </template>
 
 <script>
 	import BScroll from "better-scroll"
-	import vShopcart from "../shopCart/shopCart"
+	import vShopcart from "../shopCart/shopCart";
+	import vcartContral from "../cartContral/cartContral";
+	
 	var ERR_OK = 0
 	
 	export default{
@@ -55,7 +60,8 @@
 			}
 		},
 		components:{
-			vShopcart
+			vShopcart,
+			vcartContral
 		},
 		created(){
 			this.$http.get('/api/goods').then((response) => {
@@ -90,7 +96,8 @@
 					click:true
 				})
 				this.foodsScroll = new BScroll(this.$refs.foodsWrapper,{
-					probeType:3
+					probeType:3,
+					click:true
 				})
 				this.foodsScroll.on('scroll',(pos)=>{
 					this.scrollY = Math.abs((Math.round(pos.y)));
@@ -113,6 +120,10 @@
 				let rightItems = this.$refs.foodsWrapper.getElementsByClassName("content-item-hook");
 				let el = rightItems[index];
 				this.foodsScroll.scrollToElement(el,300);
+			},
+			incrementTotal(el){
+				console.log(this.$refs)
+				this.$refs.shopCart.drop(el);
 			}
 		}
 	}
@@ -189,6 +200,11 @@
 	            padding:18px 0
 	            padding-left:10px
 	            border-1px(rgba(7,17,27,0.1))
+	            position:relative
+	            .cart-contral-wrapper
+	              position:absolute
+	              right:0
+	              bottom:10px
 	            .img
 	              flex:0 0 80px
 	              width:80px
